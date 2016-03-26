@@ -9,6 +9,7 @@ public class Process{
 		burst = -1;
 		priority = -1;
 	}
+	
 	public Process(String pid, int burst, int arrival, int priority){
 		this.pid = pid;		
 		this.burst = burst;
