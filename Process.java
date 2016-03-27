@@ -17,7 +17,7 @@ public class Process{
 		this.priority = priority;
 	}
 	
-	public String getPid() {
+	public String getpid() {
 		return pid;
 	}
 	
@@ -33,7 +33,7 @@ public class Process{
 		return priority;
 	}
 	
-	public void setPid(String pid) {
+	public void setpid(String pid) {
 		this.pid = pid;
 	}
 	
