@@ -2,4 +2,4 @@
 
 javac *.java
 #java Main fcfs test.info
-java Main preprior test.info
+java Main rr test.info

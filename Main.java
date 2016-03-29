@@ -123,6 +123,7 @@ public class Main{
 	}
 
 	/** FIRST COME FIRST SERVE */
+	// TODO: Handle case where a process is completed but no others have arrived yet
 	public void fcfs(LinkedList<Process> inQueue){
 		System.out.println("RUNNING FCFS");
 		
@@ -352,7 +353,72 @@ public class Main{
 		
 	}
 
+	/** Round Robin */
 	public void rr(LinkedList<Process> inQueue){
+		System.out.println("RUNNING ROUND ROBIN");
+		int quantum = 3; // how long before switching?
+		
+		LinkedList<Process> sched = new LinkedList<Process>();
+		
+		//get all the initial processes into the queue
+		for(Process entry: inQueue){
+			if(entry.getArrival() == 0)	sched.add(entry);
+		}
+		
+		// handle case where no processes are added
+		if(sched.isEmpty()) return;
+		
+		//simulate
+		int time = 0;
+		
+		Process currentProcess = sched.poll();
+		int q = quantum;
+		
+		while(currentProcess.getRemaining()>0) {
+			// decrement towards next round
+			q--;
+
+			//print
+			System.out.println("Time: "+time+ ", process "+ currentProcess.getpid()+" running");
+			//increment all other processes waiting times
+			for(Process entry: sched){
+				entry.incrementWaiting();
+			}
+			currentProcess.incrementWaiting();
+
+			if(currentProcess.getResponse() == -1){
+				currentProcess.setResponse(time - currentProcess.getArrival());
+			}
+			
+			//decrement remaining time and put back in queue so long as the process is not yet done running
+			currentProcess.setRemaining(currentProcess.getRemaining()-1);
+
+			// switch process?
+			if(currentProcess.getRemaining() <= 0){
+				// get new process
+				if(!sched.isEmpty()) currentProcess = sched.poll();
+				q = quantum;
+			} else if (q <= 0) {
+				// switch the round robin
+				if(!sched.isEmpty()){
+					sched.add(currentProcess);
+					currentProcess = sched.poll();
+					q = quantum;
+				}  else {
+					q = quantum;
+				}
+			}
+			time++;
+			
+			// consider adding a new process
+			for(Process entry: inQueue){
+				if(entry.getArrival() == time){
+					sched.add(entry);
+				}
+			}
+		}
+		//analyze
+		analyze(inQueue);
 		
 	}
 	
