@@ -253,11 +253,102 @@ public class Main{
 		analyze(inQueue);
 	}
 
+	/** Priority, non-preemptive */
+	// TODO: Add aging
 	public void nonpreprior(LinkedList<Process> inQueue){
+		System.out.println("RUNNING PRIORITY NON-PREEMPTIVE");
 		
+		PriorityQueue<Process> sched = new PriorityQueue<Process>(5, new ComparePriority());
+		
+		//get all the initial processes into the queue
+		for(Process entry: inQueue){
+			if(entry.getArrival() == 0)	sched.add(entry);
+		}
+		
+		// handle case where no processes are added
+		if(sched.isEmpty()) return;
+		
+		//simulate
+		int time = 0;
+		
+		Process currentProcess = sched.poll();
+		
+		while(currentProcess.getRemaining()>0) {
+
+			//print
+			System.out.println("Time: "+time+ ", process "+ currentProcess.getpid()+" running");
+			//increment all other processes waiting times
+			for(Process entry: sched){
+				entry.incrementWaiting();
+			}
+			currentProcess.incrementWaiting();
+
+			if(currentProcess.getResponse() == -1){
+				currentProcess.setResponse(time - currentProcess.getArrival());
+			}
+			
+			//decrement remaining time and put back in queue so long as the process is not yet done running
+			currentProcess.setRemaining(currentProcess.getRemaining()-1);
+
+			// switch process?
+			if(currentProcess.getRemaining() <= 0){
+				// get new process
+				if(!sched.isEmpty()) currentProcess = sched.poll();
+			}
+			time++;
+			
+			// consider adding a new process
+			for(Process entry: inQueue){
+				if(entry.getArrival() == time){
+					sched.add(entry);
+				}
+			}
+		}
+		//analyze
+		analyze(inQueue);
 	}
 
+	/** Priority,preemptive */
+	// TODO: Add aging
 	public void preprior(LinkedList<Process> inQueue){
+		System.out.println("RUNNING PRIORITY PREEMPTIVE");
+		
+		PriorityQueue<Process> sched = new PriorityQueue<Process>(5, new ComparePriority());
+		//get all the processes into the queue
+		for(Process entry: inQueue){
+			if(entry.getArrival() == 0)	sched.add(entry);
+		}
+		//simulate
+		int time = 0;
+		while(!sched.isEmpty()) {
+			//pop
+			Process currentProcess = sched.poll();
+			//print
+			System.out.println("Time: "+time+ ", process "+ currentProcess.getpid()+" running");
+			//increment all other processes waiting times
+			for(Process entry: sched){
+				entry.incrementWaiting();
+			}
+
+			if(currentProcess.getResponse() == -1){
+				currentProcess.setResponse(time - currentProcess.getArrival());
+			}
+			//decrement remaining time and put back in queue so long as the process is not yet done running
+			if(currentProcess.getRemaining()>1){
+				currentProcess.setRemaining(currentProcess.getRemaining()-1);
+				sched.add(currentProcess);
+			}
+			time++;
+			
+			// consider adding a new process
+			for(Process entry: inQueue){
+				if(entry.getArrival() == time){
+					sched.add(entry);
+				}
+			}
+		}
+		//analyze
+		analyze(inQueue);
 		
 	}
 
