@@ -148,6 +148,31 @@ public class Main{
 			time++;
 		}
 		//analyze
+		analyze(inQueue);
+	}
+
+	public void sjf(LinkedList<Process> inQueue){
+		
+	}
+
+	public void srtf(LinkedList<Process> inQueue){
+		
+	}
+
+	public void nonpreprior(LinkedList<Process> inQueue){
+		
+	}
+
+	public void preprior(LinkedList<Process> inQueue){
+		
+	}
+
+	public void rr(LinkedList<Process> inQueue){
+		
+	}
+	
+	/** analysis function called at the end */
+	public void analyze(LinkedList<Process> inQueue){
 		double awt = 0;
 		double wawt= 0;
 		double art = 0;
@@ -174,27 +199,5 @@ public class Main{
 		System.out.println("Average weighted waiting time is: "+wawt/sumPri);
 		System.out.println("Average response time is: "+art/numProc);
 		System.out.println("Average weighted response time is: "+wart/sumPri);
-
-
-	}
-
-	public void sjf(LinkedList<Process> inQueue){
-		
-	}
-
-	public void srtf(LinkedList<Process> inQueue){
-		
-	}
-
-	public void nonpreprior(LinkedList<Process> inQueue){
-		
-	}
-
-	public void preprior(LinkedList<Process> inQueue){
-		
-	}
-
-	public void rr(LinkedList<Process> inQueue){
-		
 	}
 }
