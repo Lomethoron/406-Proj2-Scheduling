@@ -5,7 +5,7 @@ class CompareFCFS implements Comparator<Process>{
     
   }
   
-  public CompareTo (Process p1, Process p2){
+  public int compare (Process p1, Process p2){
     return p1.getArrival() - p2.getArrival();
   }
 }
