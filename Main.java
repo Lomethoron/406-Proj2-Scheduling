@@ -4,6 +4,11 @@ import java.io.*;
 public class Main{
 	
 	public static void main (String[] args) {
+		Main main = new Main();
+		main.doStuff(args);
+	}
+
+	public void doStuff(String[] args) {
 		
 		String sortType, inputFileName;
 		// get stuff from arguements
@@ -77,6 +82,64 @@ public class Main{
 		in.close();
 		
 		//switch to proper scheduling method
+
+		switch(sortType) {
+			case "fcfs":
+			//run sim
+			fcfs(tempQueue);
+			//print analysis
+			break;
+
+			case "sjf":
+			sjf(tempQueue);
+			break;
+
+			case "srtf":
+			srtf(tempQueue);
+			break;
+
+			case "nonpreprior":
+			nonpreprior(tempQueue);
+			break;
+
+			case "preprior":
+			preprior(tempQueue);
+			break;
+
+			case "rr":
+			rr(tempQueue);
+			break;
+
+			case "lolbutts":
+			break;
+
+			default:
+			throw new RuntimeException("Specified Scheduling method not recognized");
+		}
+		
+	}
+
+	public void fcfs(LinkedList<Process> inQueue){
+
+	}
+
+	public void sjf(LinkedList<Process> inQueue){
+		
+	}
+
+	public void srtf(LinkedList<Process> inQueue){
+		
+	}
+
+	public void nonpreprior(LinkedList<Process> inQueue){
+		
+	}
+
+	public void preprior(LinkedList<Process> inQueue){
+		
+	}
+
+	public void rr(LinkedList<Process> inQueue){
 		
 	}
 }
