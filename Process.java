@@ -1,6 +1,6 @@
 public class Process{
 	
-	private int burst, arrival, priority, remaining, waiting;
+	private int burst, arrival, priority, remaining, waiting, response;
 	private String pid;
 	
 	public Process(){
@@ -9,7 +9,7 @@ public class Process{
 		burst = -1;
 		priority = -1;
 		remaining = -1;
-		waiting = Integer.MAX_VALUE;
+		waiting = -1;
 	}
 	
 	public Process(String pid, int burst, int arrival, int priority){
@@ -19,6 +19,7 @@ public class Process{
 		this.priority = priority;
 		this.remaining = burst;
 		waiting = 0;
+		response = -1;
 	}
 	
 	public String getpid() {
@@ -39,6 +40,14 @@ public class Process{
 	
 	public int getRemaining(){
 		return remaining;
+	}
+
+	public int getWaiting() {
+		return waiting;
+	}
+
+	public int getResponse(){
+		return response;
 	}
 	
 	public void setpid(String pid) {
@@ -63,5 +72,9 @@ public class Process{
 
 	public void incrementWaiting(){
 		waiting++;
+	}
+
+	public void setResponse(int response){
+		this.response = response;
 	}
 }

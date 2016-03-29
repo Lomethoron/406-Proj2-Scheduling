@@ -131,10 +131,14 @@ public class Main{
 			//pop
 			Process currentProcess = sched.poll();
 			//print
-			System.out.println("Time: "+time+ ", process "+ currentProcess.getpid()+" running.");
+			System.out.println("Time: "+time+ ", process "+ currentProcess.getpid()+" running");
 			//increment all other processes waiting times
-			for(Process entry: inQueue){
+			for(Process entry: sched){
 				entry.incrementWaiting();
+			}
+
+			if(currentProcess.getResponse() == -1){
+				currentProcess.setResponse(time - currentProcess.getArrival());
 			}
 			//decrement remaining time and put back in queue so long as the process is not yet done running
 			if(currentProcess.getRemaining()>1){
@@ -144,6 +148,32 @@ public class Main{
 			time++;
 		}
 		//analyze
+		double awt = 0;
+		double wawt= 0;
+		double art = 0;
+		double wart = 0;
+		int sumPri = 0;
+		int numProc = inQueue.size();
+		for(Process entry: inQueue){
+			//average waiting time
+			awt += entry.getWaiting();
+			System.out.println(entry.getWaiting());
+			//weighted averae waiting time
+			wawt += entry.getPriority()*entry.getWaiting();
+
+			//average response time
+			art += entry.getResponse();
+
+			//weighted average response time
+			wart += entry.getPriority()*entry.getResponse();
+
+			//sum of priorities
+			sumPri += entry.getPriority();
+		}
+		System.out.println("Average waiting time is: "+ awt/numProc);
+		System.out.println("Average weighted waiting time is: "+wawt/sumPri);
+		System.out.println("Average response time is: "+art/numProc);
+		System.out.println("Average weighted response time is: "+wart/sumPri);
 
 
 	}
