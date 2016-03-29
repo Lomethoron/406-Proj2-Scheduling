@@ -1,3 +1,6 @@
+/** Programming project 2
+	* @author Bret Black, Will Dixon **/
+
 import java.util.*;
 import java.io.*;
 
@@ -119,7 +122,10 @@ public class Main{
 		
 	}
 
+	/** FIRST COME FIRST SERVE */
 	public void fcfs(LinkedList<Process> inQueue){
+		System.out.println("RUNNING FCFS");
+		
 		PriorityQueue<Process> sched = new PriorityQueue<Process>(5, new CompareFCFS());
 		//get all the processes into the queue
 		for(Process entry: inQueue){
@@ -151,12 +157,100 @@ public class Main{
 		analyze(inQueue);
 	}
 
+	/** SHORTEST JOB FIRST */
 	public void sjf(LinkedList<Process> inQueue){
+		System.out.println("RUNNING SJF");
 		
+		PriorityQueue<Process> sched = new PriorityQueue<Process>(5, new CompareSJF());
+		
+		//get all the initial processes into the queue
+		for(Process entry: inQueue){
+			if(entry.getArrival() == 0)	sched.add(entry);
+		}
+		
+		// handle case where no processes are added
+		if(sched.isEmpty()) return;
+		
+		//simulate
+		int time = 0;
+		
+		Process currentProcess = sched.poll();
+		
+		while(currentProcess.getRemaining()>0) {
+
+			//print
+			System.out.println("Time: "+time+ ", process "+ currentProcess.getpid()+" running");
+			//increment all other processes waiting times
+			for(Process entry: sched){
+				entry.incrementWaiting();
+			}
+			currentProcess.incrementWaiting();
+
+			if(currentProcess.getResponse() == -1){
+				currentProcess.setResponse(time - currentProcess.getArrival());
+			}
+			
+			//decrement remaining time and put back in queue so long as the process is not yet done running
+			currentProcess.setRemaining(currentProcess.getRemaining()-1);
+
+			// switch process?
+			if(currentProcess.getRemaining() <= 0){
+				// get new process
+				if(!sched.isEmpty()) currentProcess = sched.poll();
+			}
+			time++;
+			
+			// consider adding a new process
+			for(Process entry: inQueue){
+				if(entry.getArrival() == time){
+					sched.add(entry);
+				}
+			}
+		}
+		//analyze
+		analyze(inQueue);
 	}
 
+	/** SHORTEST REMAINING TIME FIRST */
 	public void srtf(LinkedList<Process> inQueue){
+		System.out.println("RUNNING SRTF");
 		
+		PriorityQueue<Process> sched = new PriorityQueue<Process>(5, new CompareSRTF());
+		//get all the processes into the queue
+		for(Process entry: inQueue){
+			if(entry.getArrival() == 0)	sched.add(entry);
+		}
+		//simulate
+		int time = 0;
+		while(!sched.isEmpty()) {
+			//pop
+			Process currentProcess = sched.poll();
+			//print
+			System.out.println("Time: "+time+ ", process "+ currentProcess.getpid()+" running");
+			//increment all other processes waiting times
+			for(Process entry: sched){
+				entry.incrementWaiting();
+			}
+
+			if(currentProcess.getResponse() == -1){
+				currentProcess.setResponse(time - currentProcess.getArrival());
+			}
+			//decrement remaining time and put back in queue so long as the process is not yet done running
+			if(currentProcess.getRemaining()>1){
+				currentProcess.setRemaining(currentProcess.getRemaining()-1);
+				sched.add(currentProcess);
+			}
+			time++;
+			
+			// consider adding a new process
+			for(Process entry: inQueue){
+				if(entry.getArrival() == time){
+					sched.add(entry);
+				}
+			}
+		}
+		//analyze
+		analyze(inQueue);
 	}
 
 	public void nonpreprior(LinkedList<Process> inQueue){
