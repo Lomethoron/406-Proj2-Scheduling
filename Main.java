@@ -120,6 +120,31 @@ public class Main{
 	}
 
 	public void fcfs(LinkedList<Process> inQueue){
+		PriorityQueue<Process> sched = new PriorityQueue<Process>(5, new CompareFCFS());
+		//get all the processes into the queue
+		for(Process entry: inQueue){
+			sched.add(entry);
+		}
+		//simulate
+		int time = 0;
+		while(!sched.isEmpty()) {
+			//pop
+			Process currentProcess = sched.poll();
+			//print
+			System.out.println("Time: "+time+ ", process "+ currentProcess.getpid()+" running.");
+			//increment all other processes waiting times
+			for(Process entry: inQueue){
+				entry.incrementWaiting();
+			}
+			//decrement remaining time and put back in queue so long as the process is not yet done running
+			if(currentProcess.getRemaining()>1){
+				currentProcess.setRemaining(currentProcess.getRemaining()-1);
+				sched.add(currentProcess);
+			}
+			time++;
+		}
+		//analyze
+
 
 	}
 
