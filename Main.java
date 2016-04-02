@@ -124,6 +124,8 @@ public class Main{
 
 	/** FIRST COME FIRST SERVE */
 	// TODO: Handle case where a process is completed but no others have arrived yet
+	// FIXED 4/2/16 dixonw
+	// TODO: Ensure that a process, once being executed, is not interupted
 	public void fcfs(LinkedList<Process> inQueue){
 		System.out.println("RUNNING FCFS");
 		
@@ -138,17 +140,26 @@ public class Main{
 			//pop
 			Process currentProcess = sched.poll();
 			//print
-			System.out.println("Time: "+time+ ", process "+ currentProcess.getpid()+" running");
+			boolean processHasArrived = currentProcess.getArrival() <= time;
+			if(processHasArrived){
+				System.out.println("Time: "+time+ ", process "+ currentProcess.getpid()+" running");
+				
+				//note when the process is first served to the CPU
+				if(currentProcess.getResponse() == -1){
+					currentProcess.setResponse(time - currentProcess.getArrival());
+				}
+			}
+			
+			else System.out.println("Time: "+time+ ", No process running");
 			//increment all other processes waiting times
 			for(Process entry: sched){
 				entry.incrementWaiting();
 			}
 
-			if(currentProcess.getResponse() == -1){
-				currentProcess.setResponse(time - currentProcess.getArrival());
-			}
+			
 			//decrement remaining time and put back in queue so long as the process is not yet done running
-			if(currentProcess.getRemaining()>1){
+			//puts a not arrived process back into the queue as well
+			if(currentProcess.getRemaining()>1 || !processHasArrived){
 				currentProcess.setRemaining(currentProcess.getRemaining()-1);
 				sched.add(currentProcess);
 			}
