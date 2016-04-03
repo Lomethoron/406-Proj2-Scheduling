@@ -191,30 +191,38 @@ public class Main{
 		
 		//simulate
 		int time = 0;
+		int numProcess = inQueue.size()-1;
+		int completeProcess = 0;
 		
-		Process currentProcess = sched.poll();
-		
-		while(currentProcess.getRemaining()>0) {
-
-			//print
-			System.out.println("Time: "+time+ ", process "+ currentProcess.getpid()+" running");
-			//increment all other processes waiting times
-			for(Process entry: sched){
-				entry.incrementWaiting();
+		while(numProcess>=completeProcess) {
+			//no process ready
+			if(sched.isEmpty()){
+				System.out.println("Time: "+time+ ", No process running");
 			}
-			currentProcess.incrementWaiting();
+			//processes ready
+			else{
+				Process currentProcess = sched.poll();
+				currentProcess.setIsCurrentProcess(true);
+				//print
+				System.out.println("Time: "+time+ ", process "+ currentProcess.getpid()+" running");
+				//increment all other processes waiting times
+				for(Process entry: sched){
+					entry.incrementWaiting();
+				}
+				currentProcess.incrementWaiting();
 
-			if(currentProcess.getResponse() == -1){
-				currentProcess.setResponse(time - currentProcess.getArrival());
-			}
-			
-			//decrement remaining time and put back in queue so long as the process is not yet done running
-			currentProcess.setRemaining(currentProcess.getRemaining()-1);
+				if(currentProcess.getResponse() == -1){
+					currentProcess.setResponse(time - currentProcess.getArrival());
+				}
+				
+				//decrement remaining time and put back in queue so long as the process is not yet done running
+				currentProcess.setRemaining(currentProcess.getRemaining()-1);
 
-			// switch process?
-			if(currentProcess.getRemaining() <= 0){
-				// get new process
-				if(!sched.isEmpty()) currentProcess = sched.poll();
+				// handle process completion
+				if(currentProcess.getRemaining() <= 0){
+					completeProcess++;
+				}
+				else sched.add(currentProcess);
 			}
 			time++;
 			
@@ -234,8 +242,59 @@ public class Main{
 		System.out.println("RUNNING SRTF");
 		
 		PriorityQueue<Process> sched = new PriorityQueue<Process>(5, new CompareSRTF());
+		
 		//get all the processes into the queue
 		for(Process entry: inQueue){
+			if(entry.getArrival() == 0)	sched.add(entry);
+		}
+		
+		//simulate
+		int time = 0;
+		int numProcess = inQueue.size()-1;
+		int completeProcess = 0;
+		
+		while(numProcess>=completeProcess) {
+			//no process ready
+			if(sched.isEmpty()){
+				System.out.println("Time: "+time+ ", No process running");
+			}
+			//processes ready
+			else{
+				Process currentProcess = sched.poll();
+				currentProcess.setIsCurrentProcess(true);
+				//print
+				System.out.println("Time: "+time+ ", process "+ currentProcess.getpid()+" running");
+				//increment all other processes waiting times
+				for(Process entry: sched){
+					entry.incrementWaiting();
+				}
+
+				if(currentProcess.getResponse() == -1){
+					currentProcess.setResponse(time - currentProcess.getArrival());
+				}
+				
+				//decrement remaining time and put back in queue so long as the process is not yet done running
+				currentProcess.setRemaining(currentProcess.getRemaining()-1);
+
+				// handle process completion
+				if(currentProcess.getRemaining() <= 0){
+					completeProcess++;
+				}
+				else sched.add(currentProcess);
+			}
+			time++;
+			
+			// consider adding a new process
+			for(Process entry: inQueue){
+				if(entry.getArrival() == time){
+					sched.add(entry);
+				}
+			}
+		}
+		//analyze
+		analyze(inQueue);
+		//get all the processes into the queue
+		/*for(Process entry: inQueue){
 			if(entry.getArrival() == 0)	sched.add(entry);
 		}
 		//simulate
@@ -268,7 +327,7 @@ public class Main{
 			}
 		}
 		//analyze
-		analyze(inQueue);
+		analyze(inQueue);*/
 	}
 
 	/** Priority, non-preemptive */
@@ -276,7 +335,7 @@ public class Main{
 	public void nonpreprior(LinkedList<Process> inQueue){
 		System.out.println("RUNNING PRIORITY NON-PREEMPTIVE");
 		
-		PriorityQueue<Process> sched = new PriorityQueue<Process>(5, new ComparePriority());
+		PriorityQueue<Process> sched = new PriorityQueue<Process>(5, new ComparePriorityNonPre());
 		
 		//get all the initial processes into the queue
 		for(Process entry: inQueue){
@@ -296,11 +355,13 @@ public class Main{
 			//processes ready
 			else{
 				Process currentProcess = sched.poll();
+				currentProcess.setIsCurrentProcess(true);
 				//print
 				System.out.println("Time: "+time+ ", process "+ currentProcess.getpid()+" running");
 				//increment all other processes waiting times
 				for(Process entry: sched){
 					entry.incrementWaiting();
+					entry.setPriority(entry.getPriority()+1);
 				}
 
 				if(currentProcess.getResponse() == -1){
@@ -310,7 +371,7 @@ public class Main{
 				//decrement remaining time and put back in queue so long as the process is not yet done running
 				currentProcess.setRemaining(currentProcess.getRemaining()-1);
 
-				// switch process?
+				// handle process completion
 				if(currentProcess.getRemaining() <= 0){
 					completeProcess++;
 				}
@@ -359,6 +420,7 @@ public class Main{
 				//increment all other processes waiting times
 				for(Process entry: sched){
 					entry.incrementWaiting();
+					entry.setPriority(entry.getPriority()+1);
 				}
 
 				if(currentProcess.getResponse() == -1){
@@ -368,7 +430,7 @@ public class Main{
 				//decrement remaining time and put back in queue so long as the process is not yet done running
 				currentProcess.setRemaining(currentProcess.getRemaining()-1);
 
-				// switch process?
+				// handle process completion
 				if(currentProcess.getRemaining() <= 0){
 					completeProcess++;
 				}
@@ -405,43 +467,46 @@ public class Main{
 		
 		//simulate
 		int time = 0;
+		int numProcess = inQueue.size()-1;
+		int completeProcess = 0;
+		int q = 0;
 		
-		Process currentProcess = sched.poll();
-		int q = quantum;
-		
-		while(currentProcess.getRemaining()>0) {
-			// decrement towards next round
-			q--;
-
-			//print
-			System.out.println("Time: "+time+ ", process "+ currentProcess.getpid()+" running");
-			//increment all other processes waiting times
-			for(Process entry: sched){
-				entry.incrementWaiting();
+		while(numProcess>=completeProcess) {
+			//no process ready
+			if(sched.isEmpty()){
+				System.out.println("Time: "+time+ ", No process running");
 			}
-			currentProcess.incrementWaiting();
-
-			if(currentProcess.getResponse() == -1){
-				currentProcess.setResponse(time - currentProcess.getArrival());
-			}
-			
-			//decrement remaining time and put back in queue so long as the process is not yet done running
-			currentProcess.setRemaining(currentProcess.getRemaining()-1);
-
-			// switch process?
-			if(currentProcess.getRemaining() <= 0){
-				// get new process
-				if(!sched.isEmpty()) currentProcess = sched.poll();
-				q = quantum;
-			} else if (q <= 0) {
-				// switch the round robin
-				if(!sched.isEmpty()){
-					sched.add(currentProcess);
-					currentProcess = sched.poll();
-					q = quantum;
-				}  else {
-					q = quantum;
+			//processes ready
+			else{
+				Process currentProcess = sched.poll();
+				//print
+				System.out.println("Time: "+time+ ", process "+ currentProcess.getpid()+" running");
+				//increment all other processes waiting times
+				for(Process entry: sched){
+					entry.incrementWaiting();
 				}
+
+				if(currentProcess.getResponse() == -1){
+					currentProcess.setResponse(time - currentProcess.getArrival());
+				}
+				
+				//decrement remaining time and put back in queue so long as the process is not yet done running
+				currentProcess.setRemaining(currentProcess.getRemaining()-1);
+
+				q++;
+				// handle process completion
+				//process is done
+				if(currentProcess.getRemaining() <= 0){
+					completeProcess++;
+					q = 0;
+				}
+				//process is out of time
+				else if(q == quantum){
+					q = 0;
+					sched.add(currentProcess);
+				}
+				//process should run again
+				else sched.push(currentProcess);
 			}
 			time++;
 			

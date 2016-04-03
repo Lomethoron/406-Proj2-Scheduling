@@ -6,6 +6,12 @@ class ComparePriorityNonPre implements Comparator<Process>{
   }
   
   public int compare (Process p1, Process p2){
-    return p1.getPriority() - p2.getPriority();
+	if(p1.getIsCurrentProcess()){
+		return -1;
+	}
+	else if(p2.getIsCurrentProcess()) {
+		return 1;
+	}
+    return p2.getPriority() - p1.getPriority();
   }
 }
