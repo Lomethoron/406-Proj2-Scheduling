@@ -2,6 +2,7 @@ public class Process{
 	
 	private int burst, arrival, priority, remaining, waiting, response;
 	private String pid;
+	private boolean isCurrentProcess;
 	
 	public Process(){
 		pid = "";
@@ -10,6 +11,7 @@ public class Process{
 		priority = -1;
 		remaining = -1;
 		waiting = -1;
+		isCurrentProcess = false;
 	}
 	
 	public Process(String pid, int burst, int arrival, int priority){
@@ -20,6 +22,7 @@ public class Process{
 		this.remaining = burst;
 		waiting = 0;
 		response = -1;
+		isCurrentProcess = false;
 	}
 	
 	public String getpid() {
@@ -50,6 +53,10 @@ public class Process{
 		return response;
 	}
 	
+	public boolean getIsCurrentProcess(){
+		return isCurrentProcess;
+	}
+	
 	public void setpid(String pid) {
 		this.pid = pid;
 	}
@@ -76,5 +83,9 @@ public class Process{
 
 	public void setResponse(int response){
 		this.response = response;
+	}
+	
+	public void setIsCurrentProcess(boolean isCurrentProcess){
+		this.isCurrentProcess = isCurrentProcess;
 	}
 }

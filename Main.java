@@ -126,6 +126,7 @@ public class Main{
 	// TODO: Handle case where a process is completed but no others have arrived yet
 	// FIXED 4/2/16 dixonw
 	// TODO: Ensure that a process, once being executed, is not interupted
+	// FIXED 4/2/16 dixonw
 	public void fcfs(LinkedList<Process> inQueue){
 		System.out.println("RUNNING FCFS");
 		
@@ -136,10 +137,12 @@ public class Main{
 		}
 		//simulate
 		int time = 0;
+		
 		while(!sched.isEmpty()) {
 			//pop
 			Process currentProcess = sched.poll();
 			//print
+			currentProcess.setIsCurrentProcess(true);
 			boolean processHasArrived = currentProcess.getArrival() <= time;
 			if(processHasArrived){
 				System.out.println("Time: "+time+ ", process "+ currentProcess.getpid()+" running");
@@ -153,7 +156,10 @@ public class Main{
 			else System.out.println("Time: "+time+ ", No process running");
 			//increment all other processes waiting times
 			for(Process entry: sched){
-				entry.incrementWaiting();
+				//make sure a process only thinks that it is waiting if it has already arrived
+				if(entry.getArrival()<=time){
+					entry.incrementWaiting();
+				}
 			}
 
 			
@@ -444,7 +450,8 @@ public class Main{
 		for(Process entry: inQueue){
 			//average waiting time
 			awt += entry.getWaiting();
-			System.out.println(entry.getWaiting());
+			System.out.println("Waiting: "+entry.getWaiting());
+			System.out.println("Response: "+entry.getResponse());
 			//weighted averae waiting time
 			wawt += entry.getPriority()*entry.getWaiting();
 
