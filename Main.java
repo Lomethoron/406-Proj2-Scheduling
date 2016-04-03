@@ -335,29 +335,44 @@ public class Main{
 		System.out.println("RUNNING PRIORITY PREEMPTIVE");
 		
 		PriorityQueue<Process> sched = new PriorityQueue<Process>(5, new ComparePriority());
-		//get all the processes into the queue
+		
+		//get all the initial processes into the queue
 		for(Process entry: inQueue){
 			if(entry.getArrival() == 0)	sched.add(entry);
 		}
+		
 		//simulate
 		int time = 0;
-		while(!sched.isEmpty()) {
-			//pop
-			Process currentProcess = sched.poll();
-			//print
-			System.out.println("Time: "+time+ ", process "+ currentProcess.getpid()+" running");
-			//increment all other processes waiting times
-			for(Process entry: sched){
-				entry.incrementWaiting();
+		int numProcess = inQueue.size()-1;
+		int completeProcess = 0;
+		
+		while(numProcess>=completeProcess) {
+			//no process ready
+			if(sched.isEmpty()){
+				System.out.println("Time: "+time+ ", No process running");
 			}
+			//processes ready
+			else{
+				Process currentProcess = sched.poll();
+				//print
+				System.out.println("Time: "+time+ ", process "+ currentProcess.getpid()+" running");
+				//increment all other processes waiting times
+				for(Process entry: sched){
+					entry.incrementWaiting();
+				}
 
-			if(currentProcess.getResponse() == -1){
-				currentProcess.setResponse(time - currentProcess.getArrival());
-			}
-			//decrement remaining time and put back in queue so long as the process is not yet done running
-			if(currentProcess.getRemaining()>1){
+				if(currentProcess.getResponse() == -1){
+					currentProcess.setResponse(time - currentProcess.getArrival());
+				}
+				
+				//decrement remaining time and put back in queue so long as the process is not yet done running
 				currentProcess.setRemaining(currentProcess.getRemaining()-1);
-				sched.add(currentProcess);
+
+				// switch process?
+				if(currentProcess.getRemaining() <= 0){
+					completeProcess++;
+				}
+				else sched.add(currentProcess);
 			}
 			time++;
 			
