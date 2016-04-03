@@ -283,35 +283,38 @@ public class Main{
 			if(entry.getArrival() == 0)	sched.add(entry);
 		}
 		
-		// handle case where no processes are added
-		if(sched.isEmpty()) return;
-		
 		//simulate
 		int time = 0;
+		int numProcess = inQueue.size()-1;
+		int completeProcess = 0;
 		
-		Process currentProcess = sched.poll();
-		
-		while(currentProcess.getRemaining()>0) {
-
-			//print
-			System.out.println("Time: "+time+ ", process "+ currentProcess.getpid()+" running");
-			//increment all other processes waiting times
-			for(Process entry: sched){
-				entry.incrementWaiting();
+		while(numProcess>=completeProcess) {
+			//no process ready
+			if(sched.isEmpty()){
+				System.out.println("Time: "+time+ ", No process running");
 			}
-			currentProcess.incrementWaiting();
+			//processes ready
+			else{
+				Process currentProcess = sched.poll();
+				//print
+				System.out.println("Time: "+time+ ", process "+ currentProcess.getpid()+" running");
+				//increment all other processes waiting times
+				for(Process entry: sched){
+					entry.incrementWaiting();
+				}
 
-			if(currentProcess.getResponse() == -1){
-				currentProcess.setResponse(time - currentProcess.getArrival());
-			}
-			
-			//decrement remaining time and put back in queue so long as the process is not yet done running
-			currentProcess.setRemaining(currentProcess.getRemaining()-1);
+				if(currentProcess.getResponse() == -1){
+					currentProcess.setResponse(time - currentProcess.getArrival());
+				}
+				
+				//decrement remaining time and put back in queue so long as the process is not yet done running
+				currentProcess.setRemaining(currentProcess.getRemaining()-1);
 
-			// switch process?
-			if(currentProcess.getRemaining() <= 0){
-				// get new process
-				if(!sched.isEmpty()) currentProcess = sched.poll();
+				// switch process?
+				if(currentProcess.getRemaining() <= 0){
+					completeProcess++;
+				}
+				else sched.add(currentProcess);
 			}
 			time++;
 			
@@ -464,9 +467,9 @@ public class Main{
 			//sum of priorities
 			sumPri += entry.getPriority();
 		}
-		System.out.println("Average waiting time is: "+ awt/numProc);
-		System.out.println("Average weighted waiting time is: "+wawt/sumPri);
-		System.out.println("Average response time is: "+art/numProc);
-		System.out.println("Average weighted response time is: "+wart/sumPri);
+		System.out.println("Average waiting time is: "+ awt/numProc+" cycles.");
+		System.out.println("Average weighted waiting time is: "+wawt/sumPri + " cycles.");
+		System.out.println("Average response time is: "+art/numProc + " cycles.");
+		System.out.println("Average weighted response time is: "+wart/sumPri + " cycles.");
 	}
 }
