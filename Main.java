@@ -113,7 +113,8 @@ public class Main{
 			rr(tempQueue);
 			break;
 
-			case "lolbutts":
+			case "wsrtf":
+			wsrtf(tempQueue);
 			break;
 
 			default:
@@ -331,7 +332,6 @@ public class Main{
 	}
 
 	/** Priority, non-preemptive */
-	// TODO: Add aging
 	public void nonpreprior(LinkedList<Process> inQueue){
 		System.out.println("RUNNING PRIORITY NON-PREEMPTIVE");
 		
@@ -386,12 +386,12 @@ public class Main{
 				}
 			}
 		}
+
 		//analyze
 		analyze(inQueue);
 	}
 
 	/** Priority,preemptive */
-	// TODO: Add aging
 	public void preprior(LinkedList<Process> inQueue){
 		System.out.println("RUNNING PRIORITY PREEMPTIVE");
 		
@@ -520,6 +520,64 @@ public class Main{
 		//analyze
 		analyze(inQueue);
 		
+	}
+	
+	/** WEIGHTED SHORTEST REMAINING TIME FIRST */
+	public void wsrtf(LinkedList<Process> inQueue){
+		System.out.println("RUNNING WSRTF");
+		
+		PriorityQueue<Process> sched = new PriorityQueue<Process>(5, new CompareWSRTF());
+		
+		//get all the processes into the queue
+		for(Process entry: inQueue){
+			if(entry.getArrival() == 0)	sched.add(entry);
+		}
+		
+		//simulate
+		int time = 0;
+		int numProcess = inQueue.size()-1;
+		int completeProcess = 0;
+		
+		while(numProcess>=completeProcess) {
+			//no process ready
+			if(sched.isEmpty()){
+				System.out.println("Time: "+time+ ", No process running");
+			}
+			//processes ready
+			else{
+				Process currentProcess = sched.poll();
+				currentProcess.setIsCurrentProcess(true);
+				//print
+				System.out.println("Time: "+time+ ", process "+ currentProcess.getpid()+" running");
+				//increment all other processes waiting times
+				for(Process entry: sched){
+					entry.incrementWaiting();
+				}
+
+				if(currentProcess.getResponse() == -1){
+					currentProcess.setResponse(time - currentProcess.getArrival());
+				}
+				
+				//decrement remaining time and put back in queue so long as the process is not yet done running
+				currentProcess.setRemaining(currentProcess.getRemaining()-1);
+
+				// handle process completion
+				if(currentProcess.getRemaining() <= 0){
+					completeProcess++;
+				}
+				else sched.add(currentProcess);
+			}
+			time++;
+			
+			// consider adding a new process
+			for(Process entry: inQueue){
+				if(entry.getArrival() == time){
+					sched.add(entry);
+				}
+			}
+		}
+		//analyze
+		analyze(inQueue);
 	}
 	
 	/** analysis function called at the end */

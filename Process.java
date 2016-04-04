@@ -80,6 +80,10 @@ public class Process{
 	public void incrementWaiting(){
 		waiting++;
 	}
+	
+	public void age(){
+		priority++;
+	}
 
 	public void setResponse(int response){
 		this.response = response;
