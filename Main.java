@@ -85,12 +85,9 @@ public class Main{
 		in.close();
 		
 		//switch to proper scheduling method
-
 		switch(sortType) {
 			case "fcfs":
-			//run sim
 			fcfs(tempQueue);
-			//print analysis
 			break;
 
 			case "sjf":

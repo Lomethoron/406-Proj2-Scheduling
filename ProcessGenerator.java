@@ -21,9 +21,9 @@ public class ProcessGenerator {
     
     for(int i=0;i<count;i++){
       int thisPid = pid+i;
-      int arrival_time = rand.nextInt(max);
-      int priority = rand.nextInt(max);
-      int burst_time = rand.nextInt(max);
+      int arrival_time = rand.nextInt(max)+1;
+      int priority = rand.nextInt(max)+1;
+      int burst_time = rand.nextInt(max)+1;
       writer.println("" + thisPid + ", " + burst_time + ", " + arrival_time + ", " + priority);
     }
     
